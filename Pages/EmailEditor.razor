@@ -1,0 +1,42 @@
+﻿@page "/email-editor"
+
+<div id="editor-container" style="height: 300px;"></div>
+
+<button @onclick="GetContent">Get Content</button>
+<button @onclick="SaveContent">Save Content</button>
+<button @onclick="LoadContent">Load Content</button>
+
+
+<div>
+    <h3>Live Preview:</h3>
+    <div id="preview-container" style="border: 1px solid #ccc; padding: 10px;"></div>
+</div>
+
+@code {
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("initializeQuill");
+        }
+    }
+
+    private async Task GetContent()
+    {
+        var content = await JSRuntime.InvokeAsync<string>("getQuillContent");
+        await JSRuntime.InvokeVoidAsync("updatePreview", content);
+    }
+
+    private async Task SaveContent()
+    {
+        await JSRuntime.InvokeVoidAsync("saveQuillContent");
+    }
+
+    private async Task LoadContent()
+    {
+        await JSRuntime.InvokeVoidAsync("loadQuillContent");
+    }
+}
